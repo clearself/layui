@@ -2,21 +2,25 @@
   index.js 项目 JS 主入口
   以依赖 layui 的 layer 和 form 模块为例
 **/    
-layui.define(['layer', 'form','table','tabledata'], function(exports){
+layui.config({
+	base: './js/modules/' //你存放新模块的目录，注意，不是 layui 的模块目录
+}).use(['layer', 'form','table','tabledata'], function(){
   var layer = layui.layer,
 	  form = layui.form,
 	  table = layui.table,
 	  tabledata = layui.tabledata,
 	  util = layui.util;
+	  // 方法渲染
 	  table.render({
 		  elem: '#test'
-		  //,url:'./data/tabledata.json'
+		  ,height: 600
+		  // ,url:'./data/tabledata.json'
 		  ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
 		  ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
 		        layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
 		        //,curr: 5 //设定初始在第 5 页
 				,limit:10
-		        ,groups: 1 //只显示 1 个连续页码
+		        // ,groups: 1 //只显示 1 个连续页码
 		        ,first: false //不显示首页
 		        ,last: false //不显示尾页
 		        
@@ -43,7 +47,7 @@ layui.define(['layer', 'form','table','tabledata'], function(exports){
 			,{type: 'checkbox', fixed: 'left'}
 			,{field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true, totalRowText: '合计'} //unresize是否禁用拖拽列宽（默认：false）
 			,{field:'username', title: '用户名',edit: 'text'}
-			,{field:'sex', title:'性别',  templet: '#switchTpl', unresize: true}
+			,{field:'sex', title:'性别',  templet: '#switchTpl', unresize: true} // templet 可以是1、函数；2、模版字符；3、工具条模板
 			,{field:'lock', title:'是否锁定', templet: '#checkboxTpl', unresize: true}
 			,{field:'city', title: '城市',edit: 'text'}
 			,{field:'sign', title: '签名'} //width 支持：数字、百分比和不填写。你还可以通过 minWidth 参数局部定义当前单元格的最小宽度，layui 2.2.1 新增
@@ -55,8 +59,11 @@ layui.define(['layer', 'form','table','tabledata'], function(exports){
 		  ]]
 		  ,data: tabledata
 		});
+		var objEdit = null
 		//头工具栏事件
 		  table.on('toolbar(test)', function(obj){
+			  console.log('obj',obj)
+			  objEdit = obj
 		    var checkStatus = table.checkStatus(obj.config.id);
 			console.log('checkStatus',checkStatus)
 		    switch(obj.event){
@@ -95,10 +102,10 @@ layui.define(['layer', 'form','table','tabledata'], function(exports){
 		      } else if(obj.event === 'edit'){
 		        layer.prompt({
 		          formType: 2
-		          ,value: data.email
+		          ,value: data.wealth
 		        }, function(value, index){
 		          obj.update({
-		            email: value
+		            wealth: value
 		          });
 		          layer.close(index);
 		        });
@@ -123,5 +130,4 @@ layui.define(['layer', 'form','table','tabledata'], function(exports){
 					console.log('锁定操作',obj)
 			      layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
 			    });
-  exports('index', {}); //注意，这里是模块输出的核心，模块名必须和 use 时的模块名一致
 });    
